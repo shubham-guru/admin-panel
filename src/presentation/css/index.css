@@ -1,0 +1,20 @@
+.tabs{
+    height: 100vh;
+}
+.ant-tabs-nav-list{
+    width: 170px;
+    padding-left: 5%;
+    padding-top: 20%;
+}
+.tab-bar-text{
+ margin-top: 4px;
+ margin-left: 4px;
+ font-weight: 500;
+ color: rgb(97, 97, 97);
+}
+
+.tabs-label{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,0 +1,21 @@
+.login-form {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+  }
+  .login-form-button {
+    width: 500px;
+    background-color: #000;
+  }
+  .login-form-button:hover{
+    background-color: #222;
+  }
+  .form-div{
+    background-color: rgb(167, 227, 207);
+    padding: 7%;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px rgb(83, 249, 194);
+  }

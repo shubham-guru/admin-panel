@@ -1,0 +1,13 @@
+.heading{
+    font-weight: 500;
+    color: #030229;
+    font-size: 4vmin;
+}
+.header-row{
+    align-items: center;
+}
+.bell-icon{
+    padding-left: 10%;
+    font-size: 20px;
+    cursor: pointer;
+}
