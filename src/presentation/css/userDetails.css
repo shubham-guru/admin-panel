@@ -1,3 +1,19 @@
 .header-col{
     margin: 2%;
 }
+.user-status-text{
+    text-transform: capitalize;
+    font-weight: 400;
+}
+.status-tag{
+    border-radius: 10px;
+    padding: 5px;
+    cursor: pointer;
+}
+.delete-icon{
+    background-color: #f6ced3;
+    padding: 10px;
+    border-radius: 10px;
+    color: #E71D36;
+    cursor: pointer;
+}

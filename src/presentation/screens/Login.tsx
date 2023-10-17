@@ -20,7 +20,7 @@ const Login = () => {
   const onFinish = async () => {
     setLoading(true)
     console.log("Received values of form: ", email, password);
-    const baseUrl = "https://xpwiz66asom4ptvrygidf3yxmu0zwmzd.lambda-url.ap-south-1.on.aws/v1/api";
+    const baseUrl = "https://xpwiz66asom4ptvrygidf3yxmu0zwmzd.lambda-url.ap-south-1.on.aws/v1/api/";
     const params = {
       password: password,
       email: email
