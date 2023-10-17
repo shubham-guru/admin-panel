@@ -11,3 +11,13 @@
     font-size: 20px;
     cursor: pointer;
 }
+.generate-id-btn{
+    background-color: #605BFF;
+    outline: none;
+    border: none;
+    color: #fff;
+    padding: 0% 15%;
+}
+.generate-id-btn:hover{
+    color: #e5e2e2 !important;
+}

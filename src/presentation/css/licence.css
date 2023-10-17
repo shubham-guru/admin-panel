@@ -1,0 +1,9 @@
+.generate-id-email{
+    margin: 5% 0%;
+}
+.generate-form-button{
+    width: 200px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
