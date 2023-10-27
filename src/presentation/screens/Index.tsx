@@ -21,27 +21,7 @@ const Index = () => {
       ),
       key: "1",
       children: <UserDetails />,
-    },
-    {
-      label: (
-        <span className="tabs-label">
-          <Image src={iconTwo} alt="licence" width={15} />
-          <Text className="tab-bar-text">Licence</Text>
-        </span>
-      ),
-      key: "2",
-      children: <Licence />,
-    },
-    {
-        label: (
-          <span className="tabs-label">
-            <Image src={iconThree} alt="properties" width={15} />
-            <Text className="tab-bar-text">Properties</Text>
-          </span>
-        ),
-        key: "3",
-        children: <Properties />,
-      },
+    }
   ];
   return (
     <Col span={24}>
