@@ -1,101 +1,139 @@
-import React, { useEffect, useState } from 'react'
-import Header from './hocs/Header'
-import { Col, Row, Table, Tag, Typography, Dropdown, Modal } from 'antd'
-import type { ColumnsType } from 'antd/es/table';
-import type { MenuProps } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
-import "../css/userDetails.css"
-import axios from 'axios'
-import DataType from '../../domain/interface/tableInterface';
+import React, { useEffect, useState } from "react";
+import Header from "./hocs/Header";
+import {
+  Col,
+  Row,
+  Table,
+  Typography,
+  Modal,
+  Button,
+  Input,
+  Form,
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { EditOutlined } from "@ant-design/icons";
+import "../css/userDetails.css";
+import axios from "axios";
+import DataType from "../../domain/interface/tableInterface";
 
 const UserDetails = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [isHostelUpdate, setIsHostelUpdate] = useState<boolean>(false);
+  const [isMemberUpdate, setIsMemberUpdate] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updatedHostelCount, setUpdatedHostelCount] = useState<string>("");
+  const [updatedMemberCount, setUpdatedMemberCount] = useState<string>("");
+
+  const [userInfo, setUserInfo] = useState({
+    userId: "",
+    name: "",
+    hostel: "",
+    member: "",
+    authToken: "",
+    hostelInfo: []
+  });
 
   const { Text } = Typography;
+  const baseUrl = "https://xpwiz66asom4ptvrygidf3yxmu0zwmzd.lambda-url.ap-south-1.on.aws/v1/api/";
 
   useEffect(() => {
-    // getAllUsers();
-  }, [])
-  
-  // const items: MenuProps['items'] = [
-  //   {
-  //     key: '1',
-  //     label: userData?.user_status === 'active' ? <Text className='user-status-text'>active</Text> : <Text className='user-status-text'>inactive</Text>,
-  //   },
-  // ];
+    getAllUsers();
+  }, []);
 
   const columns: ColumnsType<DataType> = [
     {
-      title: 'User id',
-      dataIndex: 'id',
-      key: 'id',
+      title: "User id",
+      dataIndex: "id",
+      key: "id",
     },
     {
-      title: 'Name',
-      dataIndex: 'full_name',
-      key: 'full_name',
+      title: "Name",
+      dataIndex: "full_name",
+      key: "full_name",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    // {
-    //   title: 'Status',
-    //   dataIndex: 'user_status',
-    //   key: 'user_status',
-    //   render: (user_status: string) => {
-    //     let color = user_status === 'active' ? '#C4D8FF' :'#FFBEA9';
-    //     let textColor = user_status === 'active' ? '#5B93FF' :'#FF5B5B';
-    //     return(
-    //       <div>
-    //          <Dropdown
-    //           menu={{
-    //             items,
-    //             selectable: true,
-    //             defaultSelectedKeys: ['3'],
-    //           }}
-    //         >
-    //           <Tag color={color} className='status-tag'>
-    //               <Text className='user-status-text' style={{color: textColor}}>{user_status}</Text>
-    //               <DownOutlined />
-    //           </Tag>
-    //         </Dropdown>
-    //       </div>
-    //     )
-    //   }
-    // },
-    {
-      title: 'Role',
-      dataIndex: 'role',
-      key: 'role',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: '',
-      dataIndex: '',
-      key: 'delete',
-      render: () => {
-        return(
-          <EditOutlined className='update-icon' onClick={() => setIsModalOpen(true)} />
-          
-        )
-      }
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "",
+      dataIndex: "id",
+      key: "delete",
+      render: (id: string) => {
+        return (
+          <EditOutlined
+            className="update-icon"
+            onClick={() => updateUserData(id)}
+          />
+        );
+      },
     },
   ];
 
+  // Updating the user object
+  const updateUserData = (userId: string) => {
+    const user = userData.find((item: { id: string }) => item.id === userId);
+    setUserInfo({
+      hostel: user.hostelcount,
+      member: user.memberCount ? user.memberCount : null,
+      name: user.full_name,
+      userId: user.id,
+      authToken: user.auth_token,
+      hostelInfo: user.hostels
+    });
+    setIsModalOpen(true);
+  };
+
+  // Getting the users list
   const getAllUsers = async () => {
     setLoading(true);
-    const baseUrl = "https://xpwiz66asom4ptvrygidf3yxmu0zwmzd.lambda-url.ap-south-1.on.aws/v1/api/";
-    await axios.get(baseUrl+"get-admin-user-list").then((res) => {
-      setUserData(res?.data.data.users)
-      setLoading(false)
-    }).catch((err) => {
-      setLoading(false)
-      console.log(err)
-      alert("Something went wrong");
-    })
+    await axios
+      .get(baseUrl + "get-admin-user-list")
+      .then((res) => {
+        setUserData(res?.data.data.users.filter((user: any) => user.role === "Property Owner"));
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        alert("Something went wrong");
+      });
+  };
+
+  // Updating Hostel and Member count
+  const handleClick = async (text: string, token: string) => {
+    const hostelParams = {
+      hostelcount: Number(updatedHostelCount)
+    }
+    const memberParams = {
+      memberCount: Number(updatedMemberCount)
+    }
+    let params = text === "hostel" ? hostelParams : memberParams;
+
+      text === "hostel" ? setIsHostelUpdate(true) : setIsMemberUpdate(true);
+      await axios
+      .put(baseUrl + "update-user", params, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        let mess = text === "hostel" ? "Hostel" : "Member";
+        alert( mess + " Count updated Successfully !")
+        handleCancel();
+        text === "hostel" ? setIsHostelUpdate(false) : setIsMemberUpdate(false);
+      })
+      .catch((err) => {
+        console.log(err)     
+        text === "hostel" ? setIsHostelUpdate(false) : setIsMemberUpdate(false);
+        alert("Something went wrong");
+    });
   }
 
   const handleOk = () => {
@@ -106,41 +144,88 @@ const UserDetails = () => {
     setIsModalOpen(false);
   };
 
+  const [form] = Form.useForm();
+
+
   return (
-    <Row className=''>
-        <Col className='header-col' span={23}>
-            <Header heading='User Details' />
-            {
-              loading ? <Text>Data is loading...</Text> : <Table columns={columns} dataSource={userData} />
-            }
-          </Col>
+    <Row className="">
+      <Col className="header-col" span={23}>
+        <Header heading="User Details" />
+        {loading ? (
+          <Text>Data is loading...</Text>
+        ) : (
+          <Table columns={columns} dataSource={userData} />
+        )}
+      </Col>
 
-          <Modal title="Update User details" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-            <Text>Name: Name</Text> <br />
-            <Text>UserId: userid</Text> <br />
-            <Text>Hostel: Hostel</Text> <br />
-            <Text>Member: Member</Text> <br />
+      <Modal
+        title="Update User details"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Text>Name: {userInfo.name}</Text> <br />
+        <Text>UserId: {userInfo.userId}</Text> <br />
+        
+        {/* Updated Hostel */}
+        <Col span={24} className="form-col">
+          <Text>Hostel: </Text>
+          <Form form={form} initialValues={{ hostel: userInfo.hostel }}>
+            <Form.Item name="hostel">
+              <Input
+                className="input-field"
+                onChange={(e) => setUpdatedHostelCount(e.target.value)}
+                value={updatedHostelCount}
+              />
+            </Form.Item>
+          </Form>
+          <Button className="update-btn" loading={isHostelUpdate} onClick={() => handleClick("hostel", userInfo.authToken)}>
+            Update
+          </Button>
+        </Col>
+        <br />
 
-            <table width="100%" cellPadding="5%" border={2}>
-              <tr>
-                <th>
-                  Name of Property
-                </th>
-                <th>
-                  Date of creation
-                </th>
-                <th>Status</th>
-              </tr>
+        {/* Updated Member */}
+        <Col span={24} className="form-col">
+          <Text>Member: </Text>
+          <Form form={form} initialValues={{ member: userInfo.member }}>
+            <Form.Item name="member">
+              <Input
+                className="input-field"
+                onChange={(e) => setUpdatedMemberCount(e.target.value)}
+                value={updatedMemberCount}
+              />
+            </Form.Item>
+          </Form>
+          <Button className="update-btn" loading={isMemberUpdate} onClick={() => handleClick("member", userInfo.authToken)}>
+            Update
+          </Button>
+        </Col>
+        
+        <table width="100%" cellPadding="5%" id="hostel-table">
+          <tr>
+            <th>Name of Property</th>
+            <th>Date of creation</th>
+            <th>State</th>
+          </tr>
 
-              <tr className='table-tr'>
-                <td>Vista</td>
-                <td>23/03/2021</td>
-                <td>Active</td>
-              </tr>
-            </table>
-        </Modal>
+
+              {
+                  userInfo.hostelInfo.map((item: any, index: number) => {
+                    return (
+                      <tr className="table-tr" key={index}>
+                        <td>{item.name}</td>
+                        <td>{item.createdAt.split("T")[0]}</td>
+                        <td>{item.state}</td>
+                      </tr>
+                    )
+                  })
+              }
+        </table>
+      </Modal>
     </Row>
-  )
-}
+  );
+};
 
-export default UserDetails
+export default UserDetails;

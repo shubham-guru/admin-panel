@@ -17,9 +17,24 @@
     color: #1d75e7;
     cursor: pointer;
 }
-table{
+#hostel-table{
     padding: 5%;
 }
 .table-tr{
     text-align: center;
+}
+.update-btn{
+    background-color: #1d75e7;
+    color: #ced2f6;
+    font-size: 2vmin !important;
+    border-radius: 50px !important;
+    margin-left: 10px;
+}
+.input-field{
+    width: 60px !important;
+}
+.form-col{
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: -30px;
 }
