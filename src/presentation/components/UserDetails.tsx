@@ -131,8 +131,7 @@ const UserDetails = () => {
       .then((res) => {
         let mess = text === "hostel" ? "Hostel" : "Member";
         alert(mess + " Count updated Successfully !");
-        handleCancel();
-        text === "hostel" ? setIsHostelUpdate(false) : setIsMemberUpdate(false);
+        window.location.reload()
       })
       .catch((err) => {
         console.log(err);
