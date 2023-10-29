@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Input, Row, Typography , Button } from "antd";
+import { Col, Input, Row, Typography , Button, Badge } from "antd";
 import { BellOutlined, PlusOutlined } from "@ant-design/icons";
 import "../../css/heading.css";
 
@@ -7,10 +7,13 @@ type IHeading = {
   heading: string;
   getCLick?: () => void;
   getSearchedValue: (value: string) => void
+  notificationCount?: number
 };
-const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue }) => {
+const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue, notificationCount = 0 }) => {
   const { Text } = Typography;
   const { Search } = Input;
+
+  console.log(notificationCount)
 
   return (
     <Row className="header-row" gutter={10}>
@@ -32,7 +35,9 @@ const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue }) => 
         </Col>
       ) : null}
       <Col span={2}>
-        <BellOutlined className="bell-icon" />
+        <Badge count={notificationCount}>
+          <BellOutlined className="bell-icon" />
+        </Badge>
       </Col>
     </Row>
   );

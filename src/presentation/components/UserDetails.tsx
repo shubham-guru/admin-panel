@@ -14,6 +14,7 @@ const UserDetails = () => {
   const [showSubTable, setShowSubTable] = useState<boolean>(false);
   const [userData, setUserData] = useState<Array<any>>([]);
   const [searchedData, setSearchedData] = useState<Array<any>>([]);
+  const [notifications, setNotifications] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedHostelCount, setUpdatedHostelCount] = useState<string>("");
   const [updatedMemberCount, setUpdatedMemberCount] = useState<string>("");
@@ -33,7 +34,10 @@ const UserDetails = () => {
 
   useEffect(() => {
     getAllUsers();
+    getNotifications();
   }, []);
+
+
 
   const columns: ColumnsType<DataType> = [
     {
@@ -71,8 +75,17 @@ const UserDetails = () => {
     },
   ];
 
-  console.log(userData);
 
+  const getNotifications = async () => {
+    await axios
+      .get(baseUrl + "notification")
+      .then((res) => {
+        setNotifications(res?.data.data.length)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
   // Updating the user object
   const updateUserData = (userId: string) => {
     const user = userData.find((item: { id: string }) => item.id === userId);
@@ -163,6 +176,7 @@ const UserDetails = () => {
         <Header
           heading="User Details"
           getSearchedValue={(value: string) => searchedValue(value)}
+          notificationCount={notifications}
         />
         {loading ? (
           <Text>Data is loading...</Text>
