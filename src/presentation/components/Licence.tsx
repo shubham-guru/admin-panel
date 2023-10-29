@@ -28,7 +28,7 @@ const Licence = () => {
   return (
     <Row>
         <Col className='header-col' span={23}>
-            <Header heading='Licence' getCLick={showModal} />
+            {/* <Header heading='Licence' getCLick={showModal} /> */}
         </Col>
 
         <Modal title="Generate Unique Id" centered open={isModalOpen} footer={null} onOk={handleOk} onCancel={handleCancel}>

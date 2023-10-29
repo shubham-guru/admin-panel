@@ -1,17 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Header from "./hocs/Header";
-import {
-  Col,
-  Row,
-  Table,
-  Typography,
-  Modal,
-  Button,
-  Input,
-  Form,
-} from "antd";
+import { Col, Row, Table, Typography, Modal, Button, Input, Form } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, CaretDownOutlined } from "@ant-design/icons";
 import "../css/userDetails.css";
 import axios from "axios";
 import DataType from "../../domain/interface/tableInterface";
@@ -20,7 +11,9 @@ const UserDetails = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isHostelUpdate, setIsHostelUpdate] = useState<boolean>(false);
   const [isMemberUpdate, setIsMemberUpdate] = useState<boolean>(false);
-  const [userData, setUserData] = useState<any>();
+  const [showSubTable, setShowSubTable] = useState<boolean>(false);
+  const [userData, setUserData] = useState<Array<any>>([]);
+  const [searchedData, setSearchedData] = useState<Array<any>>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedHostelCount, setUpdatedHostelCount] = useState<string>("");
   const [updatedMemberCount, setUpdatedMemberCount] = useState<string>("");
@@ -31,11 +24,12 @@ const UserDetails = () => {
     hostel: "",
     member: "",
     authToken: "",
-    hostelInfo: []
+    hostelInfo: [],
   });
 
   const { Text } = Typography;
-  const baseUrl = "https://xpwiz66asom4ptvrygidf3yxmu0zwmzd.lambda-url.ap-south-1.on.aws/v1/api/";
+  const baseUrl =
+    "https://xpwiz66asom4ptvrygidf3yxmu0zwmzd.lambda-url.ap-south-1.on.aws/v1/api/";
 
   useEffect(() => {
     getAllUsers();
@@ -77,6 +71,8 @@ const UserDetails = () => {
     },
   ];
 
+  console.log(userData);
+
   // Updating the user object
   const updateUserData = (userId: string) => {
     const user = userData.find((item: { id: string }) => item.id === userId);
@@ -86,7 +82,7 @@ const UserDetails = () => {
       name: user.full_name,
       userId: user.id,
       authToken: user.auth_token,
-      hostelInfo: user.hostels
+      hostelInfo: user.hostels,
     });
     setIsModalOpen(true);
   };
@@ -97,7 +93,16 @@ const UserDetails = () => {
     await axios
       .get(baseUrl + "get-admin-user-list")
       .then((res) => {
-        setUserData(res?.data.data.users.filter((user: any) => user.role === "Property Owner"));
+        setUserData(
+          res?.data.data.users.filter(
+            (user: any) => user.role === "Property Owner"
+          )
+        );
+        setSearchedData(
+          res?.data.data.users.filter(
+            (user: any) => user.role === "Property Owner"
+          )
+        );
         setLoading(false);
       })
       .catch((err) => {
@@ -109,32 +114,32 @@ const UserDetails = () => {
   // Updating Hostel and Member count
   const handleClick = async (text: string, token: string) => {
     const hostelParams = {
-      hostelcount: Number(updatedHostelCount)
-    }
+      hostelcount: Number(updatedHostelCount),
+    };
     const memberParams = {
-      memberCount: Number(updatedMemberCount)
-    }
+      memberCount: Number(updatedMemberCount),
+    };
     let params = text === "hostel" ? hostelParams : memberParams;
 
-      text === "hostel" ? setIsHostelUpdate(true) : setIsMemberUpdate(true);
-      await axios
+    text === "hostel" ? setIsHostelUpdate(true) : setIsMemberUpdate(true);
+    await axios
       .put(baseUrl + "update-user", params, {
         headers: {
-          "Authorization": `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => {
         let mess = text === "hostel" ? "Hostel" : "Member";
-        alert( mess + " Count updated Successfully !")
+        alert(mess + " Count updated Successfully !");
         handleCancel();
         text === "hostel" ? setIsHostelUpdate(false) : setIsMemberUpdate(false);
       })
       .catch((err) => {
-        console.log(err)     
+        console.log(err);
         text === "hostel" ? setIsHostelUpdate(false) : setIsMemberUpdate(false);
         alert("Something went wrong");
-    });
-  }
+      });
+  };
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -146,15 +151,27 @@ const UserDetails = () => {
 
   const [form] = Form.useForm();
 
+  const searchedValue = (txt: string) => {
+    let searchedArray = userData.filter((ele: { email: string }) =>
+      ele.email.includes(txt)
+    );
+    setSearchedData(searchedArray);
+  };
 
   return (
     <Row className="">
       <Col className="header-col" span={23}>
-        <Header heading="User Details" />
+        <Header
+          heading="User Details"
+          getSearchedValue={(value: string) => searchedValue(value)}
+        />
         {loading ? (
           <Text>Data is loading...</Text>
         ) : (
-          <Table columns={columns} dataSource={userData} />
+          <Table
+            columns={columns}
+            dataSource={searchedData ? searchedData : userData}
+          />
         )}
       </Col>
 
@@ -167,7 +184,6 @@ const UserDetails = () => {
       >
         <Text>Name: {userInfo.name}</Text> <br />
         <Text>UserId: {userInfo.userId}</Text> <br />
-        
         {/* Updated Hostel */}
         <Col span={24} className="form-col">
           <Text>Hostel: </Text>
@@ -180,12 +196,15 @@ const UserDetails = () => {
               />
             </Form.Item>
           </Form>
-          <Button className="update-btn" loading={isHostelUpdate} onClick={() => handleClick("hostel", userInfo.authToken)}>
+          <Button
+            className="update-btn"
+            loading={isHostelUpdate}
+            onClick={() => handleClick("hostel", userInfo.authToken)}
+          >
             Update
           </Button>
         </Col>
         <br />
-
         {/* Updated Member */}
         <Col span={24} className="form-col">
           <Text>Member: </Text>
@@ -198,11 +217,14 @@ const UserDetails = () => {
               />
             </Form.Item>
           </Form>
-          <Button className="update-btn" loading={isMemberUpdate} onClick={() => handleClick("member", userInfo.authToken)}>
+          <Button
+            className="update-btn"
+            loading={isMemberUpdate}
+            onClick={() => handleClick("member", userInfo.authToken)}
+          >
             Update
           </Button>
         </Col>
-        
         <table width="100%" cellPadding="5%" id="hostel-table">
           <tr>
             <th>Name of Property</th>
@@ -210,18 +232,45 @@ const UserDetails = () => {
             <th>State</th>
           </tr>
 
+          {userInfo.hostelInfo.map((item: any, index: number) => {
+            return (
+              <>
+                <tr className="table-tr" key={index}>
+                  <td>
+                    {item.name}{" "}
+                    <CaretDownOutlined
+                      onClick={() => setShowSubTable(!showSubTable)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </td>
+                  <td>{item.createdAt.split("T")[0]}</td>
+                  <td>{item.state}</td>
+                </tr>
 
-              {
-                  userInfo.hostelInfo.map((item: any, index: number) => {
-                    return (
-                      <tr className="table-tr" key={index}>
-                        <td>{item.name}</td>
-                        <td>{item.createdAt.split("T")[0]}</td>
-                        <td>{item.state}</td>
-                      </tr>
-                    )
-                  })
-              }
+                {showSubTable ? (
+                  <Col className="sub-table-col" span={24}>
+                    <table width={'100%'} cellPadding={5} border={1}>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                    </tr>
+
+                    {item.members.map((member: any, index: number) => {
+                      return (
+                        <tr key={index}>
+                          <td>{member.full_name}</td>
+                          <td>{member.email}</td>
+                          <td>{member.job_role}</td>
+                        </tr>
+                      );
+                    })}
+                    </table>
+                  </Col>
+                ) : null}
+              </>
+            );
+          })}
         </table>
       </Modal>
     </Row>

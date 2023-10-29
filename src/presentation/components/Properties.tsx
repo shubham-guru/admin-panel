@@ -6,7 +6,7 @@ const Properties = () => {
   return (
     <Row className=''>
         <Col className='header-col' span={23}>
-            <Header heading='Properties' />
+            {/* <Header heading='Properties' /> */}
         </Col>
     </Row>
   )

@@ -38,3 +38,8 @@
     margin-top: 10px;
     margin-bottom: -30px;
 }
+
+.sub-table-col{
+    width: 100%;
+    border: solid 1px #000;
+}
