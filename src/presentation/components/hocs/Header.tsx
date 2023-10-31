@@ -16,7 +16,7 @@ const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue, notif
   console.log(notificationCount )
 
   const items: MenuProps['items'] = 
-    notificationCount.map((item: any) => {
+    notificationCount?.map((item: any) => {
       return(
        {
          label: (
