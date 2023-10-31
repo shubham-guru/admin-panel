@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Input, Row, Typography , Button, Badge } from "antd";
+import { Col, Input, Row, Typography , Button, Badge, Dropdown, MenuProps } from "antd";
 import { BellOutlined, PlusOutlined } from "@ant-design/icons";
 import "../../css/heading.css";
 
@@ -7,13 +7,28 @@ type IHeading = {
   heading: string;
   getCLick?: () => void;
   getSearchedValue: (value: string) => void
-  notificationCount?: number
+  notificationCount?: any
 };
-const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue, notificationCount = 0 }) => {
+const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue, notificationCount}) => {
   const { Text } = Typography;
   const { Search } = Input;
 
-  console.log(notificationCount)
+  console.log(notificationCount )
+
+  const items: MenuProps['items'] = 
+    notificationCount.map((item: any) => {
+      return(
+       {
+         label: (
+           <Text>
+            {item.email + " is trying to access more features"}
+          </Text>
+        ),
+        key: item.id,
+       }
+      )
+    })
+  ;
 
   return (
     <Row className="header-row" gutter={10}>
@@ -35,9 +50,11 @@ const Header: React.FC<IHeading> = ({ heading, getCLick, getSearchedValue, notif
         </Col>
       ) : null}
       <Col span={2}>
-        <Badge count={notificationCount}>
-          <BellOutlined className="bell-icon" />
-        </Badge>
+      <Dropdown placement="bottomRight" menu={{ items }}>
+          <Badge count={notificationCount?.length}>
+            <BellOutlined className="bell-icon" />
+          </Badge>
+        </Dropdown>
       </Col>
     </Row>
   );

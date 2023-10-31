@@ -14,7 +14,7 @@ const UserDetails = () => {
   const [showSubTable, setShowSubTable] = useState<boolean>(false);
   const [userData, setUserData] = useState<Array<any>>([]);
   const [searchedData, setSearchedData] = useState<Array<any>>([]);
-  const [notifications, setNotifications] = useState<number>(0);
+  const [notifications, setNotifications] = useState<any>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedHostelCount, setUpdatedHostelCount] = useState<string>("");
   const [updatedMemberCount, setUpdatedMemberCount] = useState<string>("");
@@ -80,7 +80,7 @@ const UserDetails = () => {
     await axios
       .get(baseUrl + "notification")
       .then((res) => {
-        setNotifications(res?.data.data.length)
+        setNotifications(res?.data.data)
       })
       .catch((err) => {
         console.log(err)

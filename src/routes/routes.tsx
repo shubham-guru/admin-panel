@@ -4,12 +4,12 @@ import Login from "../presentation/screens/Login";
 import Index from "../presentation/screens/Index";
 
 const routes = createBrowserRouter([
+  // {
+  //   path: "/",
+  //   element: <Login />
+  // },
   {
     path: "/",
-    element: <Login />
-  },
-  {
-    path: "/index",
     element: <Index />,
   }
 ]);
